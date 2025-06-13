@@ -18,7 +18,7 @@ class NotificacionRepository
 
     public function findByUsuarioId($usuarioId)
     {
-        return Notificacion::where('usuario_id', $usuarioId)->get();
+        return Notificacion::where('id_usuario', $usuarioId)->get();
     }
 
     public function create(array $data)

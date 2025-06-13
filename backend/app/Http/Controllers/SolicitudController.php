@@ -2,8 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use App\Services\SolicitudService;
+use App\Models\Solicitud;
 use Illuminate\Http\Request;
+use App\Services\SolicitudService;
 
 class SolicitudController extends Controller
 {
@@ -55,14 +56,26 @@ class SolicitudController extends Controller
             'estado' => 'sometimes|required|string|in:PENDIENTE,APROBADA,RECHAZADA',
         ]);
 
-        $solicitud = $this->solicitudService->updateSolicitud($id, $data);
+        $solicitud = Solicitud::find($id); 
 
-        return response()->json($solicitud);
+        if (!$solicitud) {
+            return response()->json(['error' => 'Solicitud no encontrada'], 404);
+        }
+
+        $solicitudActualizada = $this->solicitudService->updateSolicitud($solicitud, $data);
+
+        return response()->json($solicitudActualizada);
     }
 
     public function destroy($id)
     {
-        $this->solicitudService->deleteSolicitud($id);
+        $solicitud = Solicitud::find($id);
+
+        if (!$solicitud) {
+            return response()->json(['error' => 'Solicitud no encontrada'], 404);
+        }
+
+        $this->solicitudService->deleteSolicitud($solicitud);
         return response()->json(null, 204);
     }
 }

@@ -2,8 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use App\Services\JornadaService;
+use App\Models\Jornada;
 use Illuminate\Http\Request;
+use App\Services\JornadaService;
 
 class JornadaController extends Controller
 {
@@ -51,14 +52,26 @@ class JornadaController extends Controller
             'tiempo_pausas' => 'sometimes|required',
         ]);
 
-        $jornada = $this->jornadaService->updateJornada($id, $data);
+        $jornada = Jornada::find($id);
 
-        return response()->json($jornada);
+        if (!$jornada) {
+            return response()->json(['error' => 'Jornada no encontrada'], 404);
+        }
+
+        $jornadaActualizada = $this->jornadaService->updateJornada($jornada, $data);
+
+        return response()->json($jornadaActualizada);
     }
 
     public function destroy($id)
     {
-        $this->jornadaService->deleteJornada($id);
+        $jornada = Jornada::find($id);
+        
+        if (!$jornada) {
+            return response()->json(['error' => 'Jornada no encontrada'], 404);
+        }
+
+        $this->jornadaService->deleteJornada($jornada);
         return response()->json(null, 204);
     }
 }
